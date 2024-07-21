@@ -1,0 +1,12 @@
+.movie-list {
+    display: grid;
+    background-color: #FFFFFF;
+    width: 1010px;
+    grid-template-columns: 451px 451px;
+    grid-gap: 36px;
+    row-gap: 34px;
+    justify-content: center;
+    margin-top: 21px;
+    margin-left: auto;
+    margin-right: auto;
+}
