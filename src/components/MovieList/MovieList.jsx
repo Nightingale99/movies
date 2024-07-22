@@ -1,21 +1,18 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { Spin, Alert } from 'antd';
+import { Offline, Online } from 'react-detect-offline';
 import classes from './MovieList.module.css';
+import './MovieList.css';
 import Movie from '../Movie/Movie.jsx';
 
 export default function MovieList() {
-  const [isLoading, setIsLoading] = useState(false);
-
   const [genres, setGenres] = useState([]);
 
   const [movies, setMovies] = useState([]);
 
-  const movieList = movies.slice(0, 6)
-    .map((movie) => <Movie key={movie.id} movie={movie} genres={genres}/>);
-
   useEffect(() => {
     async function fetchMovies() {
-      setIsLoading(true);
       const moviesResponse = await axios(
         'https://api.themoviedb.org/3/search/movie',
         {
@@ -30,11 +27,9 @@ export default function MovieList() {
         },
       );
       setMovies(moviesResponse.data.results);
-      setIsLoading(false);
     }
 
     async function fetchGenres() {
-      setIsLoading(true);
       const genresResponse = await axios('https://api.themoviedb.org/3/genre/movie/list', {
         method: 'GET',
         headers: {
@@ -42,15 +37,25 @@ export default function MovieList() {
         },
         responseType: 'json',
       });
-      setIsLoading(false);
       setGenres(genresResponse.data.genres);
     }
     fetchMovies();
     fetchGenres();
   }, []);
+
   return (
-        <section className={classes['movie-list']}>
-        {isLoading ? <p>Loading...</p> : movieList}
-        </section>
+        <>
+        <Online>
+          <section className={classes['movie-list']}>
+          {(movies.length > 0 && genres.length > 0)
+            ? movies.slice(0, 6).map((movie) => <Movie key={movie.id}
+          movie={movie} genres={genres}/>)
+            : <Spin size='large'/>}
+          </section>
+        </Online>
+        <Offline>
+          <Alert type='error' showIcon description='No connection, check your internet'/>
+        </Offline>
+        </>
   );
 }
