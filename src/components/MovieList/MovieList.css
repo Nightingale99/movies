@@ -1,5 +1,10 @@
 .ant-spin {
-    position: absolute;
-    top: 50vh;
-    left: 50vw;
+  position: absolute;
+  top: 50vh;
+  left: 505px;
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
 }

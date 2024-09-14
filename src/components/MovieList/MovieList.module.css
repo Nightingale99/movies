@@ -1,12 +1,20 @@
 .movie-list {
-    display: grid;
-    background-color: #FFFFFF;
-    width: 1010px;
-    grid-template-columns: 451px 451px;
-    grid-gap: 36px;
-    row-gap: 34px;
-    justify-content: center;
-    padding-top: 21px;
-    margin-left: auto;
-    margin-right: auto;
+  display: grid;
+  background-color: #ffffff;
+  width: 1010px;
+  grid-template-columns: 451px 451px;
+  grid-gap: 36px;
+  row-gap: 34px;
+  justify-content: center;
+  padding-top: 21px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.no-movies {
+  width: 940px;
+}
+
+.movie-list {
+  margin-bottom: 36px;
 }
