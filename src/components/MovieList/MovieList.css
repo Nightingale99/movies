@@ -8,3 +8,9 @@
   display: flex;
   justify-content: space-between;
 }
+
+@media (max-width: 1010px) {
+  .ant-spin {
+    left: 50vw;
+  }
+}

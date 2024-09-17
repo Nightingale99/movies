@@ -1,21 +1,23 @@
-import PropTypes, { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import PropTypes from 'prop-types'
 import axios from 'axios'
 import { Spin, Pagination } from 'antd'
+import { GenresContext } from '../GenresProvider'
 import classes from './RatedTab.module.css'
 import MovieList from '../MovieList/MovieList'
 
 export default function RatedTab({
   guestToken,
-  genres,
   tokenRecreateHandler,
   starHandler,
 }) {
   const [ratedMovies, setRatedMovies] = useState({
     results: [],
   })
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const genres = useContext(GenresContext)
   async function fetchRatedMovies(guestTokenFetch, page = 1) {
-    let wasError = false
+    /* TODO: get rid of wasError variable */
     setIsLoading(true)
     const ratedMoviesResponse = await axios
       .get(
@@ -30,17 +32,20 @@ export default function RatedTab({
         },
       )
       .catch((err) => {
-        if (err.response.data.status_code === 34) {
+        console.log(err)
+        /* P.S. if token is dead we will get 401 error and then we should recreate this asap */
+        if (err.response.status === 401) {
           tokenRecreateHandler()
-          wasError = true
-        } else {
-          throw new Error('Something went wrong')
+        }
+        return {
+          data: {
+            results: [],
+          },
         }
       })
     setIsLoading(false)
-    return wasError ? [] : ratedMoviesResponse.data
+    return ratedMoviesResponse.data
   }
-
   async function onPaginationChange(page) {
     const moviesFetched = await fetchRatedMovies(guestToken, page)
     setRatedMovies(moviesFetched)
@@ -52,7 +57,6 @@ export default function RatedTab({
       setRatedMovies(ratedMoviesFetched)
     })()
   }, [])
-
   return (
     <>
       {!isLoading ? (
@@ -64,7 +68,7 @@ export default function RatedTab({
       ) : (
         <Spin size="large" />
       )}
-      {isLoading || ratedMovies.total_results < 20 ? null : (
+      {!isLoading && ratedMovies.total_results > 20 && (
         <Pagination
           defaultCurrent={1}
           onChange={onPaginationChange}
@@ -73,7 +77,8 @@ export default function RatedTab({
             ratedMovies.total_results > 10000
               ? 10000
               : ratedMovies.total_results
-            /* it looks like themoviedb don't let us scroll more then 500 pages even if it shows there is 500+! */
+            /* it looks like themoviedb don't let us scroll more then 500 pages even if it shows there is 500+
+            so i decided to end it up on 500 pages if there's more! */
           }
           showSizeChanger={false}
           pageSize={20}
@@ -87,10 +92,6 @@ export default function RatedTab({
 
 RatedTab.propTypes = {
   guestToken: PropTypes.string.isRequired,
-  genres: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-  })).isRequired,
   tokenRecreateHandler: PropTypes.func.isRequired,
   starHandler: PropTypes.func.isRequired,
 }

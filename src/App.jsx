@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Spin, Tabs } from 'antd'
-import TabPane from 'antd/es/tabs/TabPane'
+import { GenresContextProvider } from './components/GenresProvider'
 import RatedTab from './components/RatedTab/RatedTab'
 import SearchTab from './components/SearchTab/SearchTab'
 import './App.css'
 
 function App() {
   const [genres, setGenres] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [guestToken, setGuestToken] = useState('')
 
   async function fetchGenres() {
@@ -32,6 +32,7 @@ function App() {
   }
 
   async function createGuestToken() {
+    setIsLoading(true)
     const guestTokenResponse = await axios(
       'https://api.themoviedb.org/3/authentication/guest_session/new',
       {
@@ -47,6 +48,7 @@ function App() {
       guestTokenResponse.data.guest_session_id,
     )
     localStorage.setItem('movie-ratings', JSON.stringify({}))
+    setIsLoading(false)
     return guestTokenResponse.data.guest_session_id
   }
 
@@ -62,6 +64,7 @@ function App() {
         const localGuestToken = await createGuestToken()
         setGuestToken(localGuestToken)
       }
+      setIsLoading(false)
     })()
   }, [])
 
@@ -101,38 +104,42 @@ function App() {
       )
     }
   }
-
   return (
     <div className="movie-app">
-      <Tabs
-        centered
-        defaultActiveKey="1"
-        animated
-        type="cards"
-        destroyInactiveTabPane
-      >
-        {!isLoading ? (
-          /* P.S. Tabpane is deprecated and I know it. I hope its not a very big problem, I don't want to remake this :( */
-          <>
-            <TabPane tab="Search" key="1">
-              <SearchTab genres={genres} starHandler={starHandler} />
-            </TabPane>
-            <TabPane tab="Rated" key="2">
-              <RatedTab
-                genres={genres}
-                guestToken={guestToken}
-                starHandler={starHandler}
-                tokenRecreateHandler={async () => {
-                  const tok = await createGuestToken()
-                  setGuestToken(tok)
-                }}
-              />
-            </TabPane>
-          </>
-        ) : (
-          <Spin size="large" />
-        )}
-      </Tabs>
+      {
+        isLoading ? <Spin size="large" /> :  <GenresContextProvider genres={genres}>
+        <Tabs
+          centered
+          defaultActiveKey="1"
+          animated
+          type="cards"
+          destroyInactiveTabPane
+          items={[
+            {
+              key: '1',
+              label: 'Search',
+              children: 
+                <SearchTab starHandler={starHandler} />
+              ,
+            },
+            {
+              key: '2',
+              label: 'Rated',
+              children: 
+                <RatedTab
+                  guestToken={guestToken}
+                  starHandler={starHandler}
+                  tokenRecreateHandler={async () => {
+                    const tok = await createGuestToken()
+                    setGuestToken(tok)
+                  }}
+                />
+              ,
+            },
+          ]}
+        />
+      </GenresContextProvider>
+      }
     </div>
   )
 }

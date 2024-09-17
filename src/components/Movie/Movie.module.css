@@ -38,7 +38,8 @@
   padding: 0;
   margin-left: 20px;
   margin-bottom: 7px;
-  overflow-x: auto;
+  overflow-x: scroll;
+  overflow-y: visible;
   scrollbar-width: thin;
   width: 228px;
 }
@@ -52,7 +53,7 @@
   border: 1px solid #d9d9d9;
   background: #fafafa;
   color: #000000a6;
-  max-height: 16px;
+
   white-space: nowrap;
 }
 
@@ -123,4 +124,59 @@
 
 .green-border::after {
   border-color: #66e900;
+}
+
+@media (max-width: 1010px){
+  .movie {
+    width: 92%;
+    height: 245px;
+    position: relative;
+  }
+
+  .movie-description {
+    width: 105%;
+    position: relative;
+    left: -6.5em;
+    height: auto;
+  }
+
+  .tags-list {
+    width: 80%;
+    height: fit-content;
+    margin-bottom: 9px;
+  }
+
+  .movie-poster {
+    margin-top: 6px;
+    margin-left: 9px;
+    height: 91px;
+    max-width: 60px;
+    min-width: 60px;
+    min-height: 91px;
+    max-height: 91px;
+  }
+
+  .movie-title {
+    margin-bottom: 7px;
+  }
+
+  .movie-user-rate {
+    margin-left: auto;
+    margin-top: auto;
+    margin-bottom: 10px;
+    margin-right: 5px;
+    font-size: 15px;
+  }
+
+  .rate-flex {
+    display: flex; 
+    flex-direction: column;
+    min-height: 50px;
+  }
+  
+  .movie-spinner {
+    top: 35px;
+    z-index: 50;
+    left: 28px;
+  }
 }

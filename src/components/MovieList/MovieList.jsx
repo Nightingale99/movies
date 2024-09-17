@@ -23,7 +23,7 @@ export default function MovieList({ movies, genres, starHandler }) {
           ) : (
             <Alert
               className={classes['no-movies']}
-              description="Фильмов по этому запросу не найдено, попробуйте сменить запрос."
+              description="Фильмов не найдено."
               type="error"
               showIcon
             >

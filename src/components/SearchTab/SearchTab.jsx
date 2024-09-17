@@ -1,15 +1,19 @@
 import Input from 'antd/es/input/Input'
 import { debounce } from 'lodash'
+import { useContext, useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import PropTypes, { useEffect, useRef, useState } from 'react'
+import PropTypes from 'prop-types'
 import { Pagination, Spin } from 'antd'
+import { GenresContext } from '../GenresProvider'
 import MovieList from '../MovieList/MovieList'
 import classes from './SearchTab.module.css'
 
-export default function SearchTab({ genres, starHandler }) {
+export default function SearchTab({ starHandler }) {
   const [isLoading, setIsLoading] = useState(true)
   const [movies, setMovies] = useState([])
   const searchQuery = useRef(null)
+
+  const genres = useContext(GenresContext)
 
   async function fetchMovies(movieQuery, pagePos) {
     setIsLoading(true)
@@ -98,11 +102,5 @@ export default function SearchTab({ genres, starHandler }) {
 }
 
 SearchTab.propTypes = {
-  genres: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-    }),
-  ).isRequired,
   starHandler: PropTypes.func.isRequired,
 }

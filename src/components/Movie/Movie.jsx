@@ -5,8 +5,10 @@ import { useState } from 'react'
 import classes from './Movie.module.css'
 
 export default function Movie({ movie, genres, starHandler }) {
-  const [starValue, setStarValue] = useState(JSON.parse(localStorage.getItem('movie-ratings'))?.[movie.id] || 0)
-  const [imageLoading, setImageLoading] = useState(true)
+  const [starValue, setStarValue] = useState(
+    JSON.parse(localStorage.getItem('movie-ratings'))?.[movie.id] || 0,
+  )
+  const [imageLoading, setImageLoading] = useState(false)
   function stringTrimming(str, maxLength) {
     return str.length > maxLength
       ? `${str.slice(0, maxLength).split(' ').slice(0, -1).join(' ')}...`
@@ -15,10 +17,6 @@ export default function Movie({ movie, genres, starHandler }) {
   function valueChangeHandler(newValue) {
     setStarValue(newValue)
     starHandler(newValue, movie.id)
-  }
-
-  function imageLoadHandler() {
-    setImageLoading(false)
   }
 
   const {
@@ -43,19 +41,21 @@ export default function Movie({ movie, genres, starHandler }) {
 
   return (
     <article className={classes.movie}>
-      {imageLoading && (
+      {imageLoading ? (
         <div className={classes['movie-poster']}>
           <Spin className={classes['movie-spinner']} />
         </div>
+      ) : (
+        <Image
+          className={classes['movie-poster']}
+          src={`https://image.tmdb.org/t/p/w500/${posterPath}`}
+          alt="Movie Poster"
+          fallback={`https://via.placeholder.com/500x715/white/black/?text=${title.split(' ').join('+')}&font=oswald.png`}
+          onLoadStart={() => setImageLoading(true)}
+          onLoad={() => setImageLoading(false)}
+        />
       )}
-      <Image
-        className={classes['movie-poster']}
-        src={`https://image.tmdb.org/t/p/w500/${posterPath}`}
-        alt="Movie Poster"
-        fallback={`https://via.placeholder.com/500x715/white/black/?text=${title.split(' ').join('+')}&font=oswald.png`}
-        onLoad={imageLoadHandler}
-      />
-      <div className={classes['movie-info']}>
+      <div className={classes['rate-flex']}>
         <h3 className={classes['movie-title']}>{stringTrimming(title, 16)}</h3>
         <span className={`${classes['movie-average']} ${voteAverageClassName}`}>
           {voteAverage.toFixed(1)}
@@ -73,7 +73,7 @@ export default function Movie({ movie, genres, starHandler }) {
           ))}
         </ul>
         <p className={classes['movie-description']}>
-          {overview ? stringTrimming(overview, 175) : 'No description'}
+          {overview ? stringTrimming(overview, 155) : 'No description'}
         </p>
         <Rate
           value={starValue}

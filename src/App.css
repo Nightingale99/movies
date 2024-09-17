@@ -9,3 +9,9 @@
 .pagination {
   padding-bottom: 17px;
 }
+
+@media(max-width: 1010px) {
+  .movie-app {
+    width: 100vw;
+  }
+}
